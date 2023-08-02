@@ -1,34 +1,32 @@
-import java.util.*;
 class Solution
 {
     public int solution(String s)
     {
         int answer = 1;
-
-        for(int i=0;i<s.length();i++){
+        
+        for(int i=1;i<s.length();i++){
             
-            int l  =i-1;
-            int r = i+1;
+            int l = i-1;
+            int r = i;
+            int temp = 2;
             while(l>=0&&r<s.length()&&s.charAt(l)==s.charAt(r)){
-                answer = Math.max(r-l+1,answer);
                 l--;
                 r++;
+                answer = Math.max(answer,temp);
+                temp+=2;
             }
             l = i-1;
             r = i+1;
-            
-            if(i+2<s.length()&&s.charAt(i)==s.charAt(i+1)){
-                answer = Math.max(answer,2);
+            temp = 3;
+            while(l>=0&&r<s.length()&&s.charAt(l)==s.charAt(r)){
+                l--;
                 r++;
-                while(l>=0&&r<s.length()&&s.charAt(l)==s.charAt(r)){
-                    answer = Math.max(r-l+1,answer);
-                    l--;
-                    r++;
-                }
+                answer = Math.max(answer,temp);
+                temp+=2;
             }
-            
         }
 
+        
         return answer;
     }
 }
