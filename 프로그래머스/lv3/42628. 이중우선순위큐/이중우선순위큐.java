@@ -1,45 +1,46 @@
 import java.util.*;
 
 class Solution {
+    
+  
+    int len = 0;
+    PriorityQueue<Integer> asc = new PriorityQueue<>((a,b)->a-b);
+    PriorityQueue<Integer> desc = new PriorityQueue<>((a,b)->b-a);
+       
     public int[] solution(String[] operations) {
         
-        int[] answer = {};
-        PriorityQueue<Integer> pqMax = new PriorityQueue<>((a,b)->b-a);
-        PriorityQueue<Integer> pqMin = new PriorityQueue<>((a,b)->a-b);
-        int size = 0;
-        for(String str:operations){
+        
+        int size = operations.length;
+        for(int i=0;i<size;i++){
+            String oper = operations[i];
+            String command = oper.split(" ")[0];
+            int num = Integer.parseInt(oper.split(" ")[1]);
+            if(command.equals("I")) insert(num);
+            else delete(num);
+        }
+        if(len==0) return new int[]{0,0};
+        return new int[]{desc.poll(),asc.poll()};
+ 
+    }
+    
+    void insert(int num){
+        asc.add(num);
+        desc.add(num);
+        len++;
+    }
+    void delete(int num){
+        
+        if(len==0) {
             
-            if(str.startsWith("I")){
-                int add = Integer.parseInt(str.substring(2,str.length()));
-                pqMax.add(add);
-                pqMin.add(add);
-                size++;
-            }else{
-                if(size==0) continue;
-                if(str.length()==3){
-                    pqMax.poll();
-                }else{
-                    pqMin.poll();
-                }
-                size--;
-            }
+            return;
+        }//최댓값 삭제
+        if(num==1){
+            desc.poll();
+        }else asc.poll();
+        len--;
+        if(len==0){
+            asc.clear();
+            desc.clear();
         }
-        if(size==0)return new int[]{0,0};
-        HashSet<Integer> set = new HashSet<>();
-        while(!pqMax.isEmpty()){
-            int idx = pqMax.poll();
-            set.add(idx);
-        }
-         int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-       
-        while(!pqMin.isEmpty()){
-            int idx = pqMin.poll();
-            if(set.contains(idx)){
-                min = Math.min(idx,min);
-                max = Math.max(idx,max);
-            }
-        }
-        return new int[]{max,min};
     }
 }
