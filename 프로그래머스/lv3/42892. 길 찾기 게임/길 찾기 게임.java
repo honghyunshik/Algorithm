@@ -2,64 +2,59 @@ import java.util.*;
 
 class Solution {
     
-    static int[][] answer; 
-    static int idx1 = 0;
-    static int idx2 = 0;
+    int idx = 0;
+    int[][] answer;
     public int[][] solution(int[][] nodeinfo) {
         
-        HashMap<String,Integer> map = new HashMap<>();
+        answer = new int[2][nodeinfo.length];
         for(int i=0;i<nodeinfo.length;i++){
-            map.put(nodeinfo[i][0]+"+"+nodeinfo[i][1],i+1);
+            nodeinfo[i] = new int[]{nodeinfo[i][0],nodeinfo[i][1],i+1};
         }
-        
         Arrays.sort(nodeinfo,(a,b)->b[1]-a[1]);
-        answer =  new int[2][nodeinfo.length];
-        Node root = null;
-        for(int i=0;i<nodeinfo.length;i++){
-            int num = map.get(nodeinfo[i][0]+"+"+nodeinfo[i][1]);
-            root = insertNode(root,num,nodeinfo[i][0]);
+        Node root = new Node(nodeinfo[0]);
+        for(int i=1;i<nodeinfo.length;i++){
+            makeBinaryTree(root, nodeinfo[i]);
         }
         preOrder(root);
-       
-       postOrder(root);
-        
+        idx = 0;
+        postOrder(root);
         return answer;
     }
-    
     private void preOrder(Node node){
         
-        answer[0][idx1++] = node.num;
+      
+        answer[0][idx++] = node.val;
         if(node.left!=null) preOrder(node.left);
         if(node.right!=null) preOrder(node.right);
-        
     }
     
     private void postOrder(Node node){
         
+        
         if(node.left!=null) postOrder(node.left);
         if(node.right!=null) postOrder(node.right);
-        answer[1][idx2++] = node.num;
+       
+        answer[1][idx++] = node.val;
     }
     
-    
-    private Node insertNode(Node node, int num, int x){
+    private Node makeBinaryTree(Node node, int[] arr){
         
-        if(node==null) return new Node(num,x);
+        if(node==null) return new Node(arr);
         
-        //작은값이 들어오면 leftChild로
-        if(node.x>x) node.left = insertNode(node.left,num,x);
-        else node.right = insertNode(node.right,num,x);
+        if(node.x>arr[0]) node.left = makeBinaryTree(node.left,arr);
+        else node.right = makeBinaryTree(node.right,arr);
         
         return node;
     }
+}
+
+class Node{
     
-    class Node{
-        
-        int num, x;
-        Node left, right;
-        Node(int num, int x){
-            this.num = num;
-            this.x = x;
-        }
+    int x,y,val;
+    Node left, right;
+    Node(int[] arr){
+        this.x = arr[0];
+        this.y = arr[1];
+        this.val = arr[2];
     }
 }
