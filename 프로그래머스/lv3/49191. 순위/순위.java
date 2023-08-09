@@ -1,63 +1,55 @@
 import java.util.*;
 class Solution {
-    
-    static int[][] dp;
-    static boolean[] visited;
-    
     public int solution(int n, int[][] results) {
         int answer = 0;
-        dp = new int[n+1][n+1];
-        visited = new boolean[n+1];
-        int MAX = 9999999;
-        for(int i=1;i<dp.length;i++){
-            Arrays.fill(dp[i],MAX);
-        }
-        for(int[] result:results){
+        int[][] arr = new int[n+1][n+1];
+         for(int[] result:results){
+            
             int win = result[0];
             int lose = result[1];
-            dp[win][lose] = 1;
-            dp[lose][win] = -1;
-        }
-        for(int i=1;i<=n;i++){
-            dp[i][i] = 0;
+            arr[win][lose] = 1;
+            arr[lose][win] = -1;
         }
         
         for(int i=1;i<=n;i++){
             
-            ArrayList<Integer> win = new ArrayList<>();
-            ArrayList<Integer> lose = new ArrayList<>();
+            for(int j=1;j<=n;j++){
+                
+                //i가 j를 이겼다 --> j가 이긴 애들은 다 이김
+                //i가 j한테 졌다 --> j가 진 애들한테 다 짐
+                if(arr[i][j]==1||arr[i][j]==-1){
+                    
+                    for(int t=1;t<=n;t++){
+                        
+                        if(arr[j][t]==arr[i][j]) arr[i][t] = arr[i][j];
+                    }
+                }
+            }
+        }
+        for(int i=1;i<=n;i++){
             
             for(int j=1;j<=n;j++){
-                if(dp[i][j]==1) lose.add(j);
-                else if(dp[i][j]==-1) win.add(j);
-            }
-            if(win.size()>0&&lose.size()>0){
                 
-                for(int p=0;p<win.size();p++){
+                //i가 j를 이겼다 --> j가 이긴 애들은 다 이김
+                //i가 j한테 졌다 --> j가 진 애들한테 다 짐
+                if(arr[i][j]==1||arr[i][j]==-1){
                     
-                    for(int q=0;q<lose.size();q++){
+                    for(int t=1;t<=n;t++){
                         
-                        dp[win.get(p)][lose.get(q)] = 1;
-                        dp[lose.get(q)][win.get(p)] = -1;
+                        if(arr[j][t]==arr[i][j]) arr[i][t] = arr[i][j];
                     }
                 }
             }
         }
         
         for(int i=1;i<=n;i++){
-            boolean flag = true;
+            
             for(int j=1;j<=n;j++){
-                if(dp[i][j]==MAX){
-                    flag = false;
-                    break;
-                }
+                
+                if(i!=j&&arr[i][j]==0) break;
+                if(j==n) answer++;
             }
-            if(flag) answer++;
         }
-        
-        
-        
-        
         return answer;
     }
 }
