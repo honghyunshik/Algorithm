@@ -19,21 +19,21 @@ class Solution {
         
         int l = 0;
         int size = sb.length();
-        int cnt = 0;
+    
+        StringBuilder plus = new StringBuilder();
+    
         while(l<size-2){
             
             if(sb.substring(l,l+3).equals("110")){
                 
                 sb.delete(l,l+3);
                 size -= 3;
-                cnt++;
+                plus.append("110");
                 l = Math.max(0,l-2);
             }else l++;
         }
-        StringBuilder plus = new StringBuilder();
-        for(int i=0;i<cnt;i++){
-            plus.append("110");
-        }
+       
+       
         boolean flag = false;
         for(int i=sb.length()-1;i>=0;i--){
             
