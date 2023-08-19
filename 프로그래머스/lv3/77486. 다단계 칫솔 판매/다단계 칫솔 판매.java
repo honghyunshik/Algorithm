@@ -1,50 +1,42 @@
 import java.util.*;
+
 class Solution {
+    
+    HashMap<String,Integer> map = new HashMap<>();
+    int[] answer;
+    int[] pointer;
+    
     public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
         
-        HashMap<String,Integer> map = new HashMap<>();      //멤버들 index 저장
+        answer = new int[enroll.length];
         for(int i=0;i<enroll.length;i++){
             map.put(enroll[i],i);
         }
-        
-        //0 : prev   1 : val
-        int[][] link = new int[enroll.length][2];
-        
+        pointer = new int[enroll.length];
         for(int i=0;i<referral.length;i++){
-        
-            String ref = referral[i];
-            if(ref.equals("-")){
-                link[i][0] = -1;
-            }else{
-                int refIdx = map.get(ref);
-                link[i][0] = refIdx;
-            }
+            if(referral[i].equals("-")) pointer[i] = -1;
+            else pointer[i] = map.get(referral[i]);
         }
         for(int i=0;i<seller.length;i++){
-            
-            //System.out.println(Arrays.toString(link[1]));
-            int val = amount[i]*100;
-            int idx = map.get(seller[i]);
-            //나눌 수 없거나 부모가 없을 경우
-            if(link[idx][0]==-1||val<10) link[idx][1] += val>=10?val*9/10:val;
-            else{
-                while(val>0&&idx!=-1){
-                    //System.out.println("seller : " + seller[i] + " idx : " + idx + " val : " + val);
-                    int nowVal = val<10?val:val*9/10;
-                    if(val%10!=0&&val>=10) nowVal = (int)Math.round((double)val*0.9+0.5);
-                    link[idx][1]+=nowVal;
-                    idx = link[idx][0];
-                    val-=nowVal;
-                }
-            }
+            sell(map.get(seller[i]),amount[i]*100);
         }
-        int[] answer = new int[link.length];
-        for(int i=0;i<link.length;i++){
-            answer[i] = link[i][1];
-            //System.out.println(Arrays.toString(link[i]));
+       return answer;
+    }
+    
+    void sell(int idx, int amount){
+        
+        if(idx==-1) return;
+        
+        //1원 미만인 경우 모두 가짐
+        if(amount<10) {
+            answer[idx] += amount;
+            return;
         }
         
+        int mod = amount/10;
+        answer[idx] += amount - mod;
+        sell(pointer[idx],mod);
         
-        return answer;
+        
     }
 }
