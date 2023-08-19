@@ -1,52 +1,51 @@
+import java.util.*;
+
 class Solution {
     public String[] solution(String[] s) {
         
-         String[] answer = new String[s.length];
-       
-        for(int idx=0;idx<s.length;idx++){
+        String[] answer = new String[s.length];
+        
+        for(int b=0;b<s.length;b++){
             
-            answer[idx] = makeStr(s[idx]);
+            Stack<Character> stack = new Stack<>();
+            int cnt = 0;
+            for(int i=0;i<s[b].length();i++){
+                
+                char z = s[b].charAt(i);
+                if(stack.size()>1){
+                    
+                    char y = stack.pop();
+                    char x = stack.pop();
+                    if(x=='1'&&y=='1'&&z=='0'){
+                        cnt++;
+                    }else{
+                        stack.push(x);
+                        stack.push(y);
+                        stack.push(z);
+                    }
+                }else stack.push(z);
+            }
+            
+            
+            StringBuilder sb = new StringBuilder();
+            while(!stack.isEmpty()){
+                char now = stack.pop();
+                if(cnt>0&&now=='0'){
+                    for(int j=0;j<cnt;j++){
+                        sb.insert(0,"110");
+                    }
+                    cnt = 0;
+                }
+                sb.insert(0,now);
+            }
+            if(cnt>0){
+                for(int j=0;j<cnt;j++){
+                    sb.insert(0,"110");
+                }
+            }
+            answer[b] = sb.toString();
+            
         }
-        
-        
-    
         return answer;
     }
-    
-    private String makeStr(String str){
-        
-        StringBuilder sb = new StringBuilder(str);
-        
-        int l = 0;
-        int size = sb.length();
-    
-        StringBuilder plus = new StringBuilder();
-    
-        while(l<size-2){
-            
-            if(sb.substring(l,l+3).equals("110")){
-                
-                sb.delete(l,l+3);
-                size -= 3;
-                plus.append("110");
-                l = Math.max(0,l-2);
-            }else l++;
-        }
-       
-       
-        boolean flag = false;
-        for(int i=sb.length()-1;i>=0;i--){
-            
-            if(sb.charAt(i)=='0'){
-                sb.insert(i+1,plus);
-                flag = true;
-                break;
-            }
-           
-        }
-        if(!flag) sb.insert(0,plus);
-        
-        return sb.toString();
-    }
-    
 }
