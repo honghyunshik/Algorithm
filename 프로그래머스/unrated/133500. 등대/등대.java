@@ -1,47 +1,46 @@
 import java.util.*;
 
 class Solution {
-    
-    ArrayList<ArrayList<Integer>> list;
-    int answer = 0;
-    //리프노드를 찾고 
+    ArrayList<ArrayList<Integer>> EDGE = new ArrayList<>();
     public int solution(int n, int[][] lighthouse) {
+        int answer = 0;
+        //1은 light on   -1은 off
         
-        list = new ArrayList<>();
         for(int i=0;i<=n;i++){
-            list.add(new ArrayList<>());
+            EDGE.add(new ArrayList<>());
         }
-        
         for(int[] light:lighthouse){
-            int l = light[0];
-            int r = light[1];
-            list.get(l).add(r);
-            list.get(r).add(l);
+            EDGE.get(light[0]).add(light[1]);
+            EDGE.get(light[1]).add(light[0]);
         }
-        dfs(1,0);
-        return answer;
+        boolean[] visited = new boolean[n+1];
+        visited[1] = true;
+        return dfs(1,visited).sum;
     }
     
-    //0은 불이 꺼져있는 것이고 1은 불이 켜져있는 것
-    private int dfs(int now, int before){
+    Light dfs(int idx, boolean[] visited){
         
-        if(list.get(now).size()==1&&list.get(now).get(0)==before) return 1;
-        
+        ArrayList<Integer> edge = EDGE.get(idx);
+        boolean must = false;
         int sum = 0;
-        for(int i=0;i<list.get(now).size();i++){
-            
-            int next = list.get(now).get(i);
-            if(next==before) continue;
-            sum += dfs(next,now);
+        for(int ed:edge){
+            if(!visited[ed]){
+                visited[ed] = true;
+                Light light = dfs(ed,visited);
+                if(light.light==-1) must = true;
+                sum += light.sum;
+                visited[ed] = false;
+            }
         }
-        
-        if(sum==0) {
-           
-            return 1;
-        }
-        
-         answer++;
-         return 0;
-        
+       
+        return new Light(must?1:-1,must?sum+1:sum);
+    }
+}
+class Light{
+    
+    int light, sum;
+    Light(int light, int sum){
+        this.light = light;
+        this.sum = sum;
     }
 }
