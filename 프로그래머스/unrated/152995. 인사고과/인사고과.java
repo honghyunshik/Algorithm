@@ -5,7 +5,6 @@ class Solution {
         
         int answer = 1;
         PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
-            if(a[0]==b[0]) return a[1]-b[1];
             return b[0]-a[0];
         });
         
@@ -24,7 +23,9 @@ class Solution {
             if(backL>score[0]){
                 backMaxR = Math.max(backMaxR,nowMaxR);
                 nowMaxR = 0;
+                backL = score[0];
             }
+            
             nowMaxR = Math.max(nowMaxR,score[1]);
 
             if(backMaxR<=score[1]){
