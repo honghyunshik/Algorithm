@@ -1,54 +1,57 @@
 import java.util.*;
+
 class Solution {
     public String solution(int n, int t, int m, String[] timetable) {
-        String answer = "";
-        int[] time = new int[timetable.length];
-        for(int i=0;i<time.length;i++){
-            time[i] = makeTime(timetable[i]);
-        }
-        Arrays.sort(time);
-        int[] last = new int[n+1];
-        Arrays.fill(last,m);
         
-        int idx = 1;
-        int lastTime = -1;
-        for(int i=0;i<time.length;i++){
+        String answer = "";
+        int ans = -1;
+        int[] bus = new int[timetable.length];
+        for(int i=0;i<bus.length;i++){
+            bus[i] = toInt(timetable[i]);
+        }
+        Arrays.sort(bus);
+        
+        int now = 540;
+        int idx = 0;
+        for(int i=0;i<n;i++){
             
-            int nowBus = 540 + t*(idx-1);
-            while(nowBus<time[i]){
-                nowBus += t;
-                idx++;
-            }
-            if(idx<=n){
-                last[idx]--;
-                if(last[idx]==0){
-                    if(idx==n) {
-                        lastTime = time[i]-1;
-                        break;
-                    }
-                    else idx++;
+            
+            for(int j=0;j<m;j++){
+                
+                //마지막인 경우
+                if(i==n-1&&j==m-1){
+                    
+                    //이미 다 탔다면
+                    if(idx>=bus.length) ans = now;
+                    else if(bus[idx]>now) ans = now;
+                    else ans = bus[idx]-1;
+                }
+                if(idx<bus.length&&bus[idx]<=now){
+                    idx++;
                 }
             }
+            now += t;
+            
         }
-        if(lastTime==-1) lastTime = 540+t*(n-1);
-        
-        return makeStr(lastTime);
+        return toStr(ans);
     }
     
-    private String makeStr(int num){
+    String toStr(int num){
         
         int hour = num/60;
-        String hourStr = hour<10?"0"+hour:hour+"";
-        num %=60;
-        String minuteStr = num<10?"0"+num:num+"";
-        return hourStr+":"+minuteStr;
+        int minute = num%60;
+        String h = hour<10?"0":"";
+        h += hour;
+        String m = minute<10?"0":"";
+        m += minute;
+        return h+":"+m;
+        
     }
     
-    private int makeTime(String s){
+    int toInt(String str){
         
-        String[] list = s.split(":");
-        int hour = Integer.parseInt(list[0]);
-        int minute = Integer.parseInt(list[1]);
-        return hour*60+minute;
+        String[] temp = str.split(":");
+        
+        return Integer.parseInt(temp[0])*60 + Integer.parseInt(temp[1]);
     }
 }
