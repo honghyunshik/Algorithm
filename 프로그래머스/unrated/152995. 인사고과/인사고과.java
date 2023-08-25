@@ -1,42 +1,38 @@
 import java.util.*;
+
 class Solution {
     public int solution(int[][] scores) {
-        int answer = 1;
-        int wanho_l = scores[0][0];
-        int wanho_r = scores[0][1];
-        int sum = wanho_l + wanho_r;
-        Person[] arr = new Person[scores.length];
-        for(int i=0;i<scores.length;i++){
-            arr[i] = new Person(scores[i][0],scores[i][1]);
-        }
-        Arrays.sort(arr);
         
-        int max = 0;
-        for(Person p:arr){
-                       //둘다 넘음
-            if(max>p.right){
-                
-                if(p.left==wanho_l&&p.right==wanho_r) return -1;
-            }else{
-                max = Math.max(max,p.right);
-                if(p.left+p.right>sum) answer++;
+        int answer = 1;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->{
+            if(a[0]==b[0]) return a[1]-b[1];
+            return b[0]-a[0];
+        });
+        
+        int sum = scores[0][0] + scores[0][1];
+        for(int[] score:scores){
+            pq.add(score);
+         }
+        
+        int backL = Integer.MAX_VALUE;
+        int backMaxR = 0;
+        int nowMaxR = 0;
+        
+        while(!pq.isEmpty()){
+            
+            int[] score = pq.poll();
+            if(backL>score[0]){
+                backMaxR = Math.max(backMaxR,nowMaxR);
+                nowMaxR = 0;
             }
-        }
-        return answer;
-    }
-}
+            nowMaxR = Math.max(nowMaxR,score[1]);
 
-class Person implements Comparable<Person>{
-    int left, right;
-    Person(int left, int right){
-        this.left = left;
-        this.right = right;
-    }
-    @Override
-    public int compareTo(Person o){
-        if(o.left==this.left){
-            return this.right-o.right;
+            if(backMaxR<=score[1]){
+                //원호보다 높다면 등수 높임
+                if(score[0]+score[1]>sum) answer++;
+            }else if(score[0]==scores[0][0]&&score[1]==scores[0][1]) return -1;
         }
-        return o.left - this.left;
+        
+        return answer;
     }
 }
