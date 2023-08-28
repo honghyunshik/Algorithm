@@ -1,61 +1,59 @@
-import java.util.Arrays;
-
 class Solution {
-
-    static int[][] BOARD;
-    static boolean[][] VISITED;
-    static int[][] D = {{0,1},{0,-1},{1,0},{-1,0}};
-    static int L,R;
-
-
+    
+    int[][] BOARD;
+    int[][] D = {{0,1},{0,-1},{1,0},{-1,0}};
+    int N, M;
+    
     public int solution(int[][] board, int[] aloc, int[] bloc) {
-
+        
         BOARD = board;
-        L = board.length;
-        R = board[0].length;
-        VISITED = new boolean[L][R];
-
-        return dfs(aloc[0],aloc[1],bloc[0],bloc[1]).dis;
+        N = board.length;
+        M = board[0].length;
+        
+        return dfs(aloc[0],aloc[1],bloc[0],bloc[1],0).cnt;
     }
-
-    //이길 수 있는 방법이 있으면 무조건 이기고
-    //질 수 밖에 없다면 최대한 높은 숫자를 반환
-    private Result dfs(int x1, int y1,int x2, int y2){
-
-        if(BOARD[x1][y1]==0) return new Result(false,0);
+    
+    Result dfs(int aL,int aR, int bL, int bR, int dis){
         
-        BOARD[x1][y1] = 0;
+        
         boolean win = false;
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        
+        int max = 0, min = Integer.MAX_VALUE;
+        if(BOARD[aL][aR]==0) return new Result(false,0);
         
         for(int i=0;i<4;i++){
-
-            int nextX1 = x1 + D[i][0];
-            int nextY1 = y1 + D[i][1];
-            if(nextX1<0||nextX1>L-1||nextY1<0||nextY1>R-1
-                    ||BOARD[nextX1][nextY1]==0) continue;
-            Result re = dfs(x2,y2,nextX1,nextY1);
-            if(!re.win){
+            
+            int nextL = aL + D[i][0];
+            int nextR = aR + D[i][1];
+            if(!can(nextL,nextR)) continue;
+            BOARD[aL][aR] = 0;
+            Result result = dfs(bL,bR,nextL,nextR,dis+1);
+            BOARD[aL][aR] = 1;
+            if(!result.win){
                 win = true;
-                min = Math.min(re.dis,min);
-            }else max = Math.max(re.dis,max);
+                min = Math.min(min,result.cnt);
+            }else max = Math.max(max,result.cnt);
         }
-        BOARD[x1][y1] = 1;
         
-        if(!win&&max==Integer.MIN_VALUE) return new Result(false,0);
+        if(max==0&&min==Integer.MAX_VALUE){
+            return new Result(false,0);
+        }
         return new Result(win,win?min+1:max+1);
-        
     }
-
+    
+    boolean can(int x, int y){
+        
+        if(x<0||x>N-1||y<0||y>M-1) return false;
+        if(BOARD[x][y]==0) return false;
+        return true;
+    }
 }
 
 class Result{
+    
     boolean win;
-    int dis;
-    Result(boolean win, int dis){
+    int cnt;
+    Result(boolean win, int cnt){
         this.win = win;
-        this.dis = dis;
+        this.cnt = cnt;
     }
 }
