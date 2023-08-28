@@ -1,57 +1,64 @@
 import java.util.*;
+
+
 class Solution {
-    static String[] answer;
+    
+    String[][] TICKETS;
+    HashMap<String,ArrayList<Integer>> map = new HashMap<>();
+    String[] answer;
+    
     public String[] solution(String[][] tickets) {
-        boolean[] visited = new boolean[tickets.length];
-        String[] ans = new String[tickets.length+1];
+        
         answer = new String[tickets.length+1];
-        ans[0] = "ICN";
+        Arrays.sort(tickets,(a,b)->{
+            if(a[0].equals(b[0])) return a[1].compareTo(b[1]);
+            return a[0].compareTo(b[0]);
+        });
+        TICKETS = tickets;
         for(int i=0;i<tickets.length;i++){
+            
+            ArrayList<Integer> list = map.getOrDefault(tickets[i][0], new ArrayList<>());
+            list.add(i);
+            map.put(tickets[i][0],list);
+        }
+        
+        boolean[] visited = new boolean[tickets.length];
+        String[] arr = new String[tickets.length+1];
+        arr[0] = "ICN";
+        for(int i=0;i<tickets.length;i++){
+            
             if(tickets[i][0].equals("ICN")){
                 visited[i] = true;
-                ans[1] = tickets[i][1];
-                dfs(tickets,visited,tickets[i][1],2,ans);    
+                dfs(1,i,visited,arr);
                 visited[i] = false;
             }
+            
         }
+        
         return answer;
     }
     
-    void dfs(String[][] tickets, boolean[] visited,String start,int idx, String[] ans){
-        //System.out.println(Arrays.toString(ans) + " " + idx + " " + ans.length);
-        if(idx==ans.length){
-            
-            boolean flag = false;
-            if(answer[0]==null) flag = true;
-            else{
-                for(int i=0;i<ans.length;i++){
-                if(ans[i].compareTo(answer[i])<0){
-                    flag = true;
-                    break;
-                }else if(ans[i].compareTo(answer[i])>0) break;
-                }   
-            }
-            if(flag){
-                for(int i=0;i<ans.length;i++){
-                    answer[i] = ans[i];
-                }
-            }
-             
-            
-            
+    void dfs(int num, int idx, boolean[] visited, String[] arr){
+        
+        if(answer[0]!=null) return;
+        
+        String next = TICKETS[idx][1];
+        arr[num] = next;
+        
+        if(num==arr.length-1){
+            answer = arr;
             return;
         }
         
-        for(int i=0;i<tickets.length;i++){
-            if(tickets[i][0].equals(start)&&!visited[i]){
-                visited[i] = true;
-                ans[idx] = tickets[i][1];
-                dfs(tickets,visited,tickets[i][1],idx+1,ans);
-                visited[i] = false;
+        ArrayList<Integer> edge = map.get(next);
+        if(edge==null) return;
+        for(int ed:edge){
+            if(!visited[ed]){
+                visited[ed] = true;
+                dfs(num+1,ed,visited,arr);
+                visited[ed] = false;
             }
         }
-        
-        
         
     }
 }
