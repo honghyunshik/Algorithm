@@ -1,48 +1,50 @@
 import java.util.*;
+
 class Solution {
-    
-    static long[] longA;
-    static boolean[] visited;
-    static ArrayList<ArrayList<Integer>> list;
-    static long answer = 0;
-    
-    public long solution(int[] a, int[][] edges) {
-        
-        int can = 0;
-        longA = new long[a.length];
-        for(int i=0;i<a.length;i++){
-            can+=a[i];
-            longA[i] = a[i];
+
+        long answer;
+        boolean[] visited;
+        long[] long_a;
+        ArrayList<Integer>[] children;
+
+        public long solution(int[] a, int[][] edges) {
+            this.answer = 0;
+            this.visited = new boolean[a.length];
+            this.children = new ArrayList[a.length];
+            this.long_a = new long[a.length];
+
+            long sum = 0;
+            for(int i = 0; i < a.length; i++){
+                sum += a[i];
+                children[i] = new ArrayList<>();
+                long_a[i] = a[i];
+            }
+
+            if(sum != 0) return -1;
+
+            for(int i = 0 ; i < edges.length; i++){
+                children[edges[i][0]].add(edges[i][1]);
+                children[edges[i][1]].add(edges[i][0]);
+            }
+
+            dfs(0);
+
+            return answer;
         }
-        if(can!=0) return -1;
-        
-        list = new ArrayList<>();
-        for(int i=0;i<a.length;i++){
-            list.add(new ArrayList<>());
-        }
-        for(int[] edge:edges){
-            int l = edge[0];
-            int r = edge[1];
-            list.get(l).add(r);
-            list.get(r).add(l);
-        }
-        visited = new boolean[a.length];
-        dfs(list.get(0).get(0),0);
-        return answer;
-    }
-    
-    void dfs(int idx, int parentIdx){
-        
-        for(int i=0;i<list.get(idx).size();i++){
+
+        public long dfs(int v){
+            this.visited[v] = true;
             
-            int next = list.get(idx).get(i);
-            if(!visited[next]){
-                visited[next] = true;
-                dfs(next, idx);
-            } 
+            for(int i = 0; i < children[v].size(); i++){
+                int next = children[v].get(i);
+                if(!visited[next]){
+                    long_a[v] += dfs(next);
+                }
+            }
+
+            this.answer += Math.abs(long_a[v]);
+
+            return long_a[v];
         }
-        answer += longA[idx]>0?longA[idx]:-longA[idx];
-        longA[parentIdx] += longA[idx];
-        longA[idx] = 0;
+
     }
-}
