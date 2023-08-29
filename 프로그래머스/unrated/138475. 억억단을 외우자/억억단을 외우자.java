@@ -1,36 +1,43 @@
-import java.util.*;
 
+import java.util.*;
 class Solution {
     public int[] solution(int e, int[] starts) {
+
+        int[] list = new int[e+1];
+        yaksu(list);
         int[] answer = new int[starts.length];
-        int[][] cnt = new int[e+1][2];
+
+        HashMap<Integer,Integer> map = new HashMap<>();
+        for(int i=0;i<starts.length;i++){
+            map.put(starts[i],i);
+        }
+        Arrays.sort(starts);
+        int idx = 0;
+        int max = 0;
+        for(int i=0;i<starts.length;i++){
+            if(idx<starts[i]){
+                idx = 0;
+                max = 0;
+                for(int j=starts[i];j<=e;j++){
+                    if(max<list[j]){
+                        idx = j;
+                        max = list[j];
+                    }
+                }
+            }
+            answer[map.get(starts[i])] = idx;
+        }
+
+        return answer;
+    }
+
+    public void yaksu(int[] list){
+        int e = list.length-1;
         for(int i=1;i<=e;i++){
-            
-            cnt[i][0] = i;
-            for(int j=1;j<=e;j++){
-                
-                if(i*j>e) break;
-                cnt[i*j][1]++;
+            for(int j=1;j<=e/i;j++){
+                list[i*j]++;
             }
         }
-        Arrays.sort(cnt,(a,b)->{
-            if(b[1]==a[1]) return a[0]-b[0];
-            return b[1]-a[1];
-        });
-    
-        
-        for(int start=0;start<starts.length;start++){
-            
-            for(int i=0;i<cnt.length;i++){
-            
-                if(cnt[i][0]>=starts[start]) {
-                    answer[start] = cnt[i][0];
-                    break;
-                }
-            }    
-        }
-        
-        
-        return answer;
+
     }
 }
