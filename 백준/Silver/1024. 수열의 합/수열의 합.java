@@ -1,58 +1,38 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
-public class Main {
-
-    public static void main(String[] args) throws IOException {
-
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+ 
+class Main
+{
+    public static void main (String[] args) throws java.lang.Exception
+    {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int n = Integer.parseInt(st.nextToken());
-        int l = Integer.parseInt(st.nextToken());
-
-        int len = Integer.MAX_VALUE, start = -1;
-
-        int x = 0, y = 0; long sum = 0;
-
-        while(y<=n){
-
-            if(sum>n){
-                sum -= x;
-                x++;
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        
+        String[] sArr = br.readLine().split(" ");
+        long N = Long.valueOf(sArr[0]);
+        long L = Long.valueOf(sArr[1]);
+        boolean flag = true;
+    
+        while(L <= 100){
+            long start = N / L - (L - 1) / 2;
+            if(start < 0)
+                break;
+                
+            if(N == (start * 2 + L - 1) * L / 2){
+                for(long i = 0; i < L; i++)
+                    bw.write(start + i + " ");
+                flag = false;
+                break;
             }
-            else if(sum<n) {
-                y++;
-                sum += y;
-            }
-            else{
-                int tempLen = y-x+1;
-                if(tempLen>=l&&tempLen<=100&&tempLen<len){
-                    len = tempLen;
-                    start = x;
-                }
-                sum-=x;
-                x++;
-            }
+            
+            L += 1;
         }
-
-        if(start==-1) System.out.println(-1);
-        else {
-            StringBuilder sb = new StringBuilder();
-            for(int i = start;i<start+len;i++){
-                sb.append(i + " ");
-            }
-            System.out.println(sb.substring(0,sb.length()-1));
-        }
-
-
-
-
-
+        
+        if(flag)
+            bw.write("-1");
+            
+        bw.write("\n");
+        bw.flush();
     }
-
-
 }
