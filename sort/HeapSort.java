@@ -6,7 +6,7 @@ public class HeapSort {
 
 
     public static void heapSort(int[] arr){
-
+        long before = System.currentTimeMillis();
         int size = arr.length;
         if(size<2) return;
 
@@ -19,6 +19,9 @@ public class HeapSort {
             Main.swap(arr,0,i);
             heapify(arr,0,i);
         }
+        long after = System.currentTimeMillis();
+        long dif = (after-before);
+        System.out.println("Heap Sort : " + dif);
 
     }
     public static int getParent(int child){ return (child-1)/2;}

@@ -16,7 +16,20 @@ public class InsertionSort {
         }
         long after = System.currentTimeMillis();
         long dif = (after-before);
-        System.out.println("걸린 시간 : " + dif);
+        System.out.println("Insertion Sort : " + dif);
+    }
+
+    public static void insertionSort(int[] arr, int l, int r){
+
+        for(int i=l+1;i<=r;i++){
+
+            int target = arr[i];
+            int idx = i-1;
+            while(idx>=l&&target<arr[idx]){
+                arr[idx+1] = arr[idx--];
+            }
+            arr[idx+1] = target;
+        }
     }
 
 

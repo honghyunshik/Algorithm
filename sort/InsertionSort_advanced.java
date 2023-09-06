@@ -15,7 +15,7 @@ public class InsertionSort_advanced {
         }
         long after = System.currentTimeMillis();
         long dif = (after-before);
-        System.out.println("걸린 시간 : " + dif);
+        System.out.println("Insertion Sort 개선 : " + dif);
     }
 
     //upper bound 사용

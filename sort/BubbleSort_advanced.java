@@ -21,6 +21,6 @@ public class BubbleSort_advanced {
 
         long after = System.currentTimeMillis();
         long dif = (after-before);
-        System.out.println("걸린 시간 : " + dif);
+        System.out.println("Bubble Sort 개선 : " + dif);
     }
 }

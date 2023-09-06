@@ -19,6 +19,6 @@ public class SelectionSort {
 
         long after = System.currentTimeMillis();
         long dif = (after-before);
-        System.out.println("걸린 시간 : " + dif);
+        System.out.println("Selection Sort : " + dif);
     }
 }
