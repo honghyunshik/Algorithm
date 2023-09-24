@@ -1,132 +1,156 @@
 import java.util.*;
+
 class Solution {
     
-    static Node[][] parent;
-    static String[][] val;
+    String[][] board = new String[51][51];
+    Node[][] parent = new Node[51][51]; 
     
     public String[] solution(String[] commands) {
         
-        parent = new Node[51][51];
-        val = new String[51][51];
-        ArrayList<String> ans = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
         
         for(String command:commands){
             
             if(command.startsWith("UPDATE")){
                 
-                String[] li = command.split(" ");
-                if(li.length==4){
+                String[] temp = command.split(" ");
+                
+                if(temp.length==4){
                     
-                    int x = Integer.parseInt(li[1]);
-                    int y = Integer.parseInt(li[2]);
-                    
-                    Node par = find(x,y);
-                    val[par.x][par.y] = li[3];
-                    
+                    int r = Integer.parseInt(temp[1]);
+                    int c = Integer.parseInt(temp[2]);
+                    String value = temp[3];
+                    update(r,c,value);
                 }else{
-                    for(int i=1;i<=50;i++){
-                        for(int j=1;j<=50;j++){
-                            
-                            if(val[i][j]!=null&&val[i][j].equals(li[1])){
-                                val[i][j] = li[2];
-                            }
-                            
-                        }
-                    }
+                    
+                    String value1 = temp[1];
+                    String value2 = temp[2];
+                    update(value1,value2);
                 }
+                
             }else if(command.startsWith("MERGE")){
                 
-                String[] li = command.split(" ");
-                int r1 = Integer.parseInt(li[1]);
-                int c1 = Integer.parseInt(li[2]);
-                int r2 = Integer.parseInt(li[3]);
-                int c2 = Integer.parseInt(li[4]);
-                union(r1,c1,r2,c2);
-               
+                String[] temp = command.split(" ");
+                int r1 = Integer.parseInt(temp[1]);
+                int c1 = Integer.parseInt(temp[2]);
+                int r2 = Integer.parseInt(temp[3]);
+                int c2 = Integer.parseInt(temp[4]);
+                merge(r1,c1,r2,c2);
             }else if(command.startsWith("UNMERGE")){
                 
-              
-                
-                String[] li = command.split(" ");
-                int r = Integer.parseInt(li[1]);
-                int c = Integer.parseInt(li[2]);
-                Node par = find(r,c);
-                String tem = val[par.x][par.y];
-                
-                ArrayList<int[]> temp = new ArrayList<>();
-                for(int i=1;i<=50;i++){
-                    for(int j=1;j<=50;j++){      
-                        Node now = find(i,j);
-                        if(i==r&&j==c) continue;
-                        if(now.x==par.x&&now.y==par.y){
-                            temp.add(new int[]{i,j});
-                        }
-                        
-                    }
-                }
-                for(int[] arr:temp){
-                    int i = arr[0];
-                    int j = arr[1];
-                    parent[i][j].x = i;
-                    parent[i][j].y = j;
-                    val[i][j] = null;
-                }
-                parent[r][c].x = r;
-                parent[r][c].y = c;
-                val[r][c] = tem;
-                
-                
-            }else{
-                String[] li = command.split(" ");
-                int r = Integer.parseInt(li[1]);
-                int c = Integer.parseInt(li[2]);
-                Node now = find(r,c);
-                
-                if(val[now.x][now.y]==null) ans.add("EMPTY");
-                else ans.add(val[now.x][now.y]);
-            }
-        }
-        String[] answer = new String[ans.size()];
+                String[] temp = command.split(" ");
+                int r = Integer.parseInt(temp[1]);
+                int c = Integer.parseInt(temp[2]);
         
-        for(int i=0;i<ans.size();i++){
-            answer[i] = ans.get(i);
+                unmerge(r,c);
+            }else{
+                
+                String[] temp = command.split(" ");
+                int r = Integer.parseInt(temp[1]);
+                int c = Integer.parseInt(temp[2]);
+                Node node = find(r,c);
+                if(node==null){
+                    list.add(board[r][c]);
+                }else{
+                    list.add(board[node.r][node.c]);
+                }
+                
+            }
+            
+        }
+        
+        
+        String[] answer = new String[list.size()];
+        for(int i=0;i<answer.length;i++){
+            if(list.get(i)==null){
+                answer[i] = "EMPTY";
+            }else answer[i] = list.get(i);
         }
         return answer;
     }
     
-    private void union(int r1, int c1, int r2, int c2){
+    public void update(int r, int c, String value){
         
-        if(r1==r2&&c1==c2) return;
-        Node p1 = find(r1,c1);
-        Node p2 = find(r2,c2);
-        if(p1.x==p2.x&&p2.y==p1.y) return;
-        if(val[p1.x][p1.y]==null) val[p1.x][p1.y] = val[p2.x][p2.y];
-        val[p2.x][p2.y] = null;
-        parent[p2.x][p2.y] = new Node(p1.x,p1.y);
-        
+        Node node = find(r,c);
+        board[node.r][node.c] = value;
     }
     
-    //부모노드 반환
-    private Node find(int x, int y){
+    public void update(String value1, String value2){
         
-        Node now = parent[x][y];
-        if(now==null){
-            now = new Node(x,y);
-            parent[x][y] = now;
-            return now;
+        for(int i=1;i<=50;i++){
+            
+            for(int j=1;j<=50;j++){
+                
+                if(board[i][j]!=null&&board[i][j].equals(value1)){
+                    board[i][j] = value2;
+                }
+            }
         }
-        int pX = now.x;
-        int pY = now.y;
-        if(x==pX&&y==pY) return now;
-        return find(pX,pY);
+    }
+    
+    public void merge(int r1, int c1, int r2, int c2){
         
+        if(r1==r2&&c1==c2) return;
+        
+        Node parentNode1 = find(r1,c1);
+        Node parentNode2 = find(r2,c2);
+        
+        //r1, c1 셀이 비어있을 경우 r2, c2 cell 값 갖는다
+        if(board[parentNode1.r][parentNode1.c]==null){
+            parent[parentNode1.r][parentNode1.c] = parentNode2;
+        }else{
+            parent[parentNode2.r][parentNode2.c] = parentNode1;
+        }
+    } 
+    //부모 찾기
+    public Node find(int r, int c){
+        
+        Node now = parent[r][c];
+        
+        if(now==null){
+            Node node = new Node(r,c);
+            parent[r][c] = node;
+            return node;
+        }
+        
+        if(now.r==r&&now.c==c) return now;
+        
+        now = find(now.r,now.c);
+        parent[r][c] = now;
+        return now;
+    }
+    
+    public void unmerge(int r, int c){
+        
+        Node node = find(r,c);
+        if(node==null) return;
+        String value = board[node.r][node.c];
+        ArrayList<int[]> list = new ArrayList<>();
+        for(int i=1;i<=50;i++){
+            
+            for(int j=1;j<=50;j++){
+                
+                if(i==r&&j==c) continue;
+                Node temp = find(i,j);
+                if(temp!=null&&temp.r==node.r&&temp.c==node.c){
+                    list.add(new int[]{i,j});
+                }
+            }
+        }
+        for(int i=0;i<list.size();i++){
+            int[] now = list.get(i);
+            parent[now[0]][now[1]] = null;
+            board[now[0]][now[1]] = null;
+        }
+        parent[r][c] = new Node(r,c);
+        board[r][c] = value;
     }
 }
 
 class Node{
-    int x,y;
-    Node(int x, int y){
-        this.x = x;
-        this.y = y;
+    int r, c;
+    Node(int r, int c){
+        this.r = r;
+        this.c = c;
     }
-} 
+}
