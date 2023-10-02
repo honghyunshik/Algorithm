@@ -1,48 +1,47 @@
 import java.util.*;
-
 class Solution {
-    int answer = 0;
+    
+    ArrayList<ArrayList<Integer>> edge = new ArrayList<>();
     int[] INFO;
-    ArrayList<ArrayList<Integer>> EDGES = new ArrayList<>();
+    
+    int answer = 0;
     public int solution(int[] info, int[][] edges) {
         
+        //전역변수로 생성
         INFO = info;
+        
+        //edge ArrayList 생성
         for(int i=0;i<info.length;i++){
-            EDGES.add(new ArrayList<>());
+            edge.add(new ArrayList<>());
         }
-        for(int[] edge:edges){
-            int l = edge[0];
-            int r = edge[1];
-            EDGES.get(l).add(r);
-   
+        for(int[] ed:edges){
+            edge.get(ed[0]).add(ed[1]);
         }
-        boolean[] visited = new boolean[info.length];
-        visited[0] = true;
-        dfs(0,0,0,new ArrayList<>(),visited);
+        
+        dfs(0,new ArrayList<>(),0,0);
+        
         return answer;
     }
     
-    void dfs(int idx, int sheep, int wolf, ArrayList<Integer> list, boolean[] visited){
+    void dfs(int idx, ArrayList<Integer> child, int sheep, int wolf){
         
+        //양이면 sheep +
         if(INFO[idx]==0) sheep++;
         else wolf++;
+        //늑대가 더 많으면 안됨
         if(sheep<=wolf) return;
+        
         answer = Math.max(answer,sheep);
         
-        
-        ArrayList<Integer> child = EDGES.get(idx);
-        ArrayList<Integer> newList = new ArrayList<>();
-        newList.addAll(child);
-        newList.addAll(list);
-         newList.remove(Integer.valueOf(idx));
-        for(int i=0;i<newList.size();i++){
-            int next = newList.get(i);
-            if(next!=idx&&!visited[next]){
-                visited[next] = true;
-                dfs(next,sheep,wolf,newList,visited);
-                visited[next] = false;
-            }
-           
+        ArrayList<Integer> newChild = new ArrayList<>(child);
+        ArrayList<Integer> nowChild = edge.get(idx);
+        newChild.addAll(nowChild);
+        int size = newChild.size();
+        for(int i=0;i<size;i++){
+            int nowVal = newChild.get(0);
+            newChild.remove(Integer.valueOf(nowVal));
+            dfs(nowVal,newChild,sheep,wolf);
+            newChild.add(nowVal);
         }
     }
 }
